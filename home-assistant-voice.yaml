@@ -92,8 +92,9 @@ wifi:
 network:
   enable_ipv6: true
 
+# CHANGED: DEBUG -> INFO (less CPU/IO jitter)
 logger:
-  level: DEBUG
+  level: INFO
   logs:
     sensor: WARN  # avoids logging debug sensor updates
 
@@ -629,7 +630,8 @@ light:
             id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 12;
       - addressable_lambda:
           name: "Thinking"
-          update_interval: 10ms
+          # CHANGED: 10ms -> 33ms (reduce CPU jitter that can impact audio)
+          update_interval: 33ms
           lambda: |-
             static uint8_t brightness_step = 0;
             static bool brightness_decreasing = true;
@@ -685,7 +687,8 @@ light:
             }
       - addressable_lambda:
           name: "Muted or Silent"
-          update_interval: 16ms
+          # CHANGED: 16ms -> 33ms
+          update_interval: 33ms
           lambda: |-
             static int8_t index = 0;
             Color muted_color(255, 0, 0);
@@ -768,7 +771,8 @@ light:
           twinkle_probability: 50%
       - addressable_lambda:
           name: "Error"
-          update_interval: 10ms
+          # CHANGED: 10ms -> 33ms
+          update_interval: 33ms
           lambda: |-
             static uint8_t brightness_step = 0;
             static bool brightness_decreasing = true;
@@ -791,7 +795,8 @@ light:
             }
       - addressable_lambda:
           name: "Timer Ring"
-          update_interval: 10ms
+          # CHANGED: 10ms -> 33ms
+          update_interval: 33ms
           lambda: |-
             static uint8_t brightness_step = 0;
             static bool brightness_decreasing = true;
@@ -1523,7 +1528,8 @@ speaker:
     dac_type: external
     channel: stereo
     timeout: never
-    buffer_duration: 100ms
+    # CHANGED: 100ms -> 500ms (reduce underruns / start-of-sentence dropouts)
+    buffer_duration: 500ms
     audio_dac: aic3204_dac
 
   # Virtual speakers to combine the announcement and media streams together into one output
@@ -1562,7 +1568,8 @@ media_source:
     id: sendspin_source
   - platform: http_request
     id: http_source
-    buffer_size: 500000
+    # CHANGED: 500000 -> 2000000 (more prebuffer for streamed TTS)
+    buffer_size: 2000000
   - platform: file
     id: file_source
     files:
